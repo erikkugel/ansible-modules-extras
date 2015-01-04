@@ -15,6 +15,7 @@ import json
 #	ENDC = '\033[0m'
 
 slackpkg = "/usr/sbin/slackpkg"
+slackpkgFlags = "-batch=on -default_answer=y -checksize=on"
 
 # (http://docs.ansible.com/developing_modules.html#reading-input)
 args_file = sys.argv[1]
@@ -27,7 +28,7 @@ arguments = shlex.split(args_data)
 #args = parser.parse_args()
 
 # (https://docs.python.org/2/library/subprocess.html)
-(stdout, stderr) = subprocess.Popen(slackpkg + " " + arguments[0], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+(stdout, stderr) = subprocess.Popen(slackpkg + " " + slackpkgFlags + " " + arguments[0], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
 print json.dumps({
 	"action": arguments[0],

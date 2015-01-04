@@ -1,4 +1,4 @@
-ansible-modules-extras
-======================
+ansible-modules-extra
+=====================
 
-Ansible extra modules - these modules do not ship with Ansible 
+Ansible extra modules - these modules do not ship with Ansible
