@@ -1,37 +1,43 @@
 #!/usr/bin/python
 
 import sys
-import shlex
-import subprocess
-import json
 
-# (http://stackoverflow.com/questions/287871/print-in-terminal-with-colors-using-python)
-#class bcolors:
-#	HEADER = '\033[95m'
-#	OKBLUE = '\033[94m'
-#	OKGREEN = '\033[92m'
-#	WARNING = '\033[93m'
-#	FAIL = '\033[91m'
-#	ENDC = '\033[0m'
+# check for updates, reutrn False if none available, return output if updates are available:
+def checkUpdates(slackpkgPath, slackpkgFlags):
+	(stdout, stderr) = subprocess.Popen(slackpkgPath + ' ' + slackpkgFlags + ' check-updates', \
+		shell=True, stdout=subprocess.PIPE).communicate()
+	print stdout
+	if 'No news is good news' in stdout:
+		return False
+	else:
+		return (stdout)
 
-slackpkg = "/usr/sbin/slackpkg"
-slackpkgFlags = "-batch=on -default_answer=y -checksize=on"
+# upgrade everything: update repositories, install new packages, upgrade existing packages, clean system
+def upgradeAll(slackpkgPath, slackpkgFlags):
+	print 'Upgrading everything'
 
-# (http://docs.ansible.com/developing_modules.html#reading-input)
-args_file = sys.argv[1]
-args_data = file(args_file).read()
-arguments = shlex.split(args_data)
+def main():
+	module = AnsibleModule(
+		argument_spec = dict(
+			action	= dict(required=True),
+			package	= dict(required=False),
+		),
+	)
 
-## (https://docs.python.org/2.7/library/argparse.html)
-#parser = argparse.ArgumentParser(description='This is a Python wrapper around Slackpkg')
-#parser.add_argument('-a','--action', help='Action',required=True)
-#args = parser.parse_args()
+	action = module.params.get('action')
+	package = module.params.get('package')
 
-# (https://docs.python.org/2/library/subprocess.html)
-(stdout, stderr) = subprocess.Popen(slackpkg + " " + slackpkgFlags + " " + arguments[0], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+	# path to slackpkg script
+	slackpkgPath = '/usr/sbin/slackpkg'
+	# flags for slackpkg, batch=on and -default_answer=y are a must execution via Ansible
+	slackpkgFlags = '-batch=on -default_answer=y -checksize=on'
 
-print json.dumps({
-	"action": arguments[0],
-	"stdout": stdout,
-	"stderr": stderr
-})
+	if action == 'check-updates':
+		module.exit_json(changed=False, updates=checkUpdates(slackpkgPath, slackpkgFlags))
+
+	if action == 'upgrade-all':
+		module.exit_json(changed=True, output=upgradeAll())
+# import module snippets
+from ansible.module_utils.basic import *
+
+main()
