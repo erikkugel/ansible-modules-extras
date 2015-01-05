@@ -1,41 +1,4 @@
-#!/usr/bin/env python
-
-DOCUMENTATION = '''
----
-module: slackpkg
-short_description: Manage Slackware packages
-description:
-  - Manages Slackware packages using slackpkg
-options:
-  action:
-    description:
-      - An action slackpkg can understand
-    required: true
-    default: check-updates
-  package:
-    description:
-      - A package in Slackware's repository or on the system
-    required: false
-    default: null
-author: Ernest Kugel
-notes:
-	- check-updates and upgrade-all actions behaviour was modified,
-		everything else works as is
-'''
-
-EXAMPLES = '''
-# Get info about ntp package
-- slackpkg: action=info package=ntp
-
-# Check for updates
-- slackpkg: action=check-updates
-
-# Upgrade system
-- slackpkg: action=upgrade-all
-
-# Get more help from slackpkg directly
-- slackpkg: action=help
-'''
+#!/usr/bin/python
 
 import sys
 
@@ -90,3 +53,7 @@ def main():
 		module.exit_json(changed=True, output=upgradeAll())
 	else:
 		module.exit_json(changed=True, output=slackpkgAux(action, package))
+
+# import module snippets
+from ansible.module_utils.basic import *
+main()
