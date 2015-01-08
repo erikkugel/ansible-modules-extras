@@ -49,15 +49,15 @@ def checkUpdates():
 # check for updates, reutrn True if available:
 def update():
 	# Don't re-download an identical changelog
-	slackpkgFlags = '-batch=on -default_answer=n -checksize=on'
-	if 'No news is good news' in slackpkgAux('check-updates', ''):
-		return False
+	if checkUpdates():
+		output = slackpkgAux('update', '')
+		return output
 	else:
-		return True
+		return 'No changes in ChangeLog.txt'
 
 # upgrade everything: update repositories, install new packages, upgrade existing packages, clean system
 def upgradeAll():
-	return slackpkgAux('update', '') \
+	return update() \
 		+ slackpkgAux('install-new', '') \
 		+ slackpkgAux ('upgrade-all', '')
 
@@ -86,10 +86,12 @@ def main():
 	# call appropriate function
 	if action == 'check-updates':
 		module.exit_json(changed=False, updates=checkUpdates())
+	if action == 'update':
+		module.exit_json(output=update())
 	elif action == 'upgrade-all':
-		module.exit_json(changed=True, output=upgradeAll())
+		module.exit_json(output=upgradeAll())
 	else:
-		module.exit_json(changed=True, output=slackpkgAux(action, package))
+		module.exit_json(output=slackpkgAux(action, package))
 
 # import module snippets
 from ansible.module_utils.basic import *
