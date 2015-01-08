@@ -1,4 +1,32 @@
 #!/usr/bin/python
+DOCUMENTATION = '''
+---
+module: slackpkg
+version_added: 
+short_description: Engage's slackpkg, Slackware's package manager
+extends_documentation_fragment: files
+description:
+  - The Engage's slackpkg, Slackware's package manager
+options:
+  action:
+    description:
+      - Which action should the module take, or otherwise pass directly to slackpkg
+    required: true
+    default: check-updates
+  package:
+    description:
+      - If operating on an individual package, pass its name
+    required: false
+    default: null
+author: Ernest Kugel
+'''
+
+EXAMPLES = '''
+# Check for updates:
+- slackpkg: action=check-updates
+# Update NTP:
+- slackpkg: action=upgrade package=ntp
+'''
 
 import sys
 
