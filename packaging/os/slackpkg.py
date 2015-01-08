@@ -12,7 +12,7 @@ options:
     description:
       - Which action should the module take, or otherwise pass directly to slackpkg
     required: true
-    default: check-updates
+    default: null
   package:
     description:
       - If operating on an individual package, pass its name
@@ -41,6 +41,15 @@ def slackpkgAux(slackpkgAction, slackpkgPackage):
 
 # check for updates, reutrn True if available:
 def checkUpdates():
+	if 'No news is good news' in slackpkgAux('check-updates', ''):
+		return False
+	else:
+		return True
+
+# check for updates, reutrn True if available:
+def update():
+	# Don't re-download an identical changelog
+	slackpkgFlags = '-batch=on -default_answer=n -checksize=on'
 	if 'No news is good news' in slackpkgAux('check-updates', ''):
 		return False
 	else:
